@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/iconfont.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<link href="css/icons-extra.css" rel="stylesheet" />
+		<script type="text/javascript" src="js/iconfont.js"></script>
+		<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+		<style>
+			body {
+				bottom: 0px;
+			}
+			
+			.mui-bar-tab .mui-tab-item.mui-active {
+				color: #ff0000
+			}
+			
+			.mui-card {
+				margin: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav" style="background-color: #F0AD4E;">
+			<a class="mui-action-back mui-icon mui-icon-back"></a>
+			<a id="info" style="color: #999;"></a>
+			<h1 class="mui-title">详情页</h1>
+		</header>
+
+		<div class="mui-card" style="top: 45px; ">
+			<div id="div1" class="mui-card-header mui-card-media" style="height:40vw;background-image:url(images/c1.jpg)"></div>
+			<div class="mui-card-content">
+				<div class="mui-card-content-inner" style="height: 100%;">
+					<p style="color: #333;" id='title'>美食</p>
+					<p><span id='date1'>2016-12-04 08:38:37</span> &nbsp;&nbsp;&nbsp; <span>发布者:</span><span id="userName">smj</span></p>
+					<h6>简介:</h6>
+					<p style="color: #333;" id="brief"></p>
+
+					<h6>主料:</h6>
+					<p style="color: #333;" id="mainL"></p>
+					<h6>步骤:</h6>
+					<div style="position: relative;height: 150px;">
+						<div class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<div>
+									<p style="color: #333;" id="content1"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<script>
+
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+			});
+			//获取url中的参数
+			function getUrlParam(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+				var r = window.location.search.substr(1).match(reg); //匹配目标参数
+				if(r != null) return unescape(r[2]);
+				return null; //返回参数值
+			}
+
+			function initData() {
+				var urls = localStorage.getItem("URLs");
+				$.ajax(urls+'/tp/Cookery/Single/indexForApp', {
+					data: {
+						id: getUrlParam("id")
+					},
+					dataType: 'json', //服务器返回json格式数据
+					async:true,
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；
+					success: function(data) {
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						$("#title").html(data.Name);
+						$("#date1").html(data.CreationTime);
+						$("#brief").html(data.briefIntroduction);
+						$("#mainL").html(data.Material);
+						$("#content1").html(data.MakeContent);
+						$("#div1").css("background-image", "url("+urls+"/" + data.PicUrl + ")");
+					},
+					error: function(data) {
+						//异常处理；
+					}
+				});
+			}
+			initData();
+		</script>
+
+	</body>
+
+</html>

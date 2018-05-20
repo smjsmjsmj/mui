@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/iconfont.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<link href="css/icons-extra.css" rel="stylesheet" />
+		<script type="text/javascript" src="js/iconfont.js"></script>
+		<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+		<style>
+			body {
+				bottom: 0px;
+			}
+			
+			.mui-bar-tab .mui-tab-item.mui-active {
+				color: #ff0000
+			}
+			
+			.mui-card {
+				margin: 4px;
+			}
+			
+			.mui-btn-block {
+				font-size: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav" style="background-color: #F0AD4E;">
+			<a class="mui-action-back mui-icon mui-icon-back"></a>
+			<a id="info" style="color: #999;"></a>
+			<h1 class="mui-title">今日特价</h1>
+		</header>
+
+		<div>
+			<ul class="mui-table-view" id="findUlData" style="margin-top: 46px;">
+
+			</ul>
+
+		</div>
+	</body>
+	<script>
+		$(".mui-icon-back").click(function(){
+			history.back(-1);
+		});
+		
+		//获取url中的参数
+			function getUrlParam(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+				var r = window.location.search.substr(1).match(reg); //匹配目标参数
+				if(r != null) return unescape(r[2]);
+				return null; //返回参数值
+			}
+		//初始化首页数据
+		function initfind(type) {
+var urls = localStorage.getItem("URLs");
+			$.ajax(urls+'/tp/Cookery/Blog/findDataForApp', {
+				data: {
+					type:type,
+					price: $("#price").val(),
+					comment: $("#comment").val()
+				},
+				dataType: 'json', //服务器返回json格式数据
+				async:true,
+				type: 'post', //HTTP请求类型
+				timeout: 10000, //超时时间设置为10秒；
+				success: function(data) {
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					$("#findUlData").empty();
+					var str = "";
+					$.each(data, function(i) {
+						str = str +
+							'<li class="mui-table-view-cell mui-media">' +
+							'<a href="#" onclick="cs(' + data[i].ID + ')">' +
+							'<img class="mui-media-object mui-pull-left" src="'+urls+"/" + data[i].PicUrl + '">' +
+							'<div class="mui-media-body">' + data[i].Name +
+							'<p class="mui-ellipsis">' + (data[i].briefIntroduction == null ? "" : data[i].briefIntroduction) + '</p>' +
+							'</div>' +
+							'</a>' +
+							'</li>';
+
+					});
+					$("#findUlData").append(str);
+				},
+				error: function(data) {
+					//异常处理；
+				}
+			});
+
+		}
+		initfind(getUrlParam("id"));
+		function cs(id) {
+			window.location.href = "findDetails.html?id=" + id;
+		}
+
+	</script>
+
+</html>
